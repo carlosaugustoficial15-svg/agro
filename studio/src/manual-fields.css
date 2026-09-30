@@ -1,0 +1,17 @@
+.ag-field select {
+  min-width: 0;
+  width: 100%;
+  padding: 6px 7px;
+  border: 1px solid #263e57;
+  border-radius: 6px;
+  background: #0a1725;
+  color: #e8f1fc;
+  font-size: 11px;
+}
+
+.ag-field input:focus,
+.manual-fields input:focus,
+.ag-field select:focus {
+  outline: 1px solid #34d98b;
+  border-color: #34d98b;
+}
