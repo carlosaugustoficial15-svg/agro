@@ -4,7 +4,8 @@ Add-Type -AssemblyName System.Drawing
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $envFile = Join-Path $root 'environment_windows.yml'
 $envName = 'pase-2026-07'
-$installDir = Join-Path $env:LOCALAPPDATA 'Miniforge3'
+$installDir = Join-Path $env:LOCALAPPDATA 'PASE\tools\Miniforge3'
+$legacyInstallDir = Join-Path $env:LOCALAPPDATA 'Miniforge3'
 
 $form = New-Object Windows.Forms.Form
 $form.Text = 'PASE - Inicialização'
@@ -46,6 +47,7 @@ function Update-Status([string]$text) {
 function Find-Conda {
     $candidates = @(
         (Join-Path $installDir 'condabin\conda.bat'),
+        (Join-Path $legacyInstallDir 'condabin\conda.bat'),
         (Join-Path $env:USERPROFILE 'miniforge3\condabin\conda.bat'),
         (Join-Path $env:USERPROFILE 'miniconda3\condabin\conda.bat'),
         (Join-Path $env:USERPROFILE 'anaconda3\condabin\conda.bat'),

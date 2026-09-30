@@ -14,7 +14,11 @@ if (!hasLock) app.quit()
 function pythonPath() {
   if (process.env.PASE_PYTHON) return process.env.PASE_PYTHON
   const local = process.env.LOCALAPPDATA || ''
-  const candidates = [path.join(local, 'Miniforge3', 'envs', 'pase-2026-07', 'python.exe'), 'python']
+  const candidates = [
+    path.join(local, 'PASE', 'tools', 'Miniforge3', 'envs', 'pase-2026-07', 'python.exe'),
+    path.join(local, 'Miniforge3', 'envs', 'pase-2026-07', 'python.exe'),
+    'python'
+  ]
   return candidates.find(p => p === 'python' || fs.existsSync(p))
 }
 

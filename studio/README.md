@@ -7,6 +7,19 @@ Editor desktop visual para configurar e executar simulações PASE sem terminal.
 Use `..\Abrir PASE.vbs`. O iniciador prepara o ambiente Python, instala a
 interface quando necessário e abre apenas a janela do aplicativo.
 
+## Instalacao em um computador Windows novo
+
+Baixe `Instalar PASE.bat` da raiz do repositório no GitHub e execute-o. O
+instalador prepara Git, Miniforge/Python, Node.js, o ambiente científico, o
+submódulo pySTICS e a interface Electron; ao final, cria `PASE Studio.bat` na
+Área de Trabalho. Não requer permissões de administrador. Requer Windows 10/11
+de 64 bits e conexão com a internet.
+
+O instalador nao sobrescreve uma copia anterior: se `PASE\agro` ja existir,
+cria uma nova pasta com data/hora no nome. SIMPLE e GRASSIM usam as dependências
+instaladas. STICS ainda exige o executável JavaSticsCmd, que não é distribuído
+neste repositorio.
+
 ## Fontes e proveniência
 
 - OpenStreetMap/Nominatim: busca de lugares e endereços.
