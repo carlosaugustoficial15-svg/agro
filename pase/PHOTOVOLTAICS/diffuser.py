@@ -194,7 +194,7 @@ class LenticularDiffuser(Diffuser):
         norm_psl = np.linalg.norm(plan_sunl, axis=1)
         ind = np.where(np.linalg.norm(plan_sunl, axis=1) == 0)
         norm_psl[ind] = 1
-        cos_beta = np.clip(np.dot(plan_sunl, self.normal) / (norm_psl * np.linalg.norm(self.normal)), -1, 1)
+        cos_beta = np.clip(np.sum(plan_sunl * self.normal, axis=1) / (norm_psl * np.linalg.norm(self.normal)), -1, 1)
         beta = np.arccos(cos_beta)
         beta_t = np.arange(-self.omega+angle_res/2, self.omega + angle_res/2, angle_res)
         beta = beta[:, np.newaxis] + beta_t
@@ -212,7 +212,7 @@ class LenticularDiffuser(Diffuser):
             gamma (nSolPos, Nvec): gamma angle in radians, Nvec is the number of segments
             discretizing the diffuser trace
         """
-        cos_gamma = np.clip(np.dot(vect_sun, self.len_vector), -1, 1)
+        cos_gamma = np.clip(np.sum(vect_sun * self.len_vector, axis=1), -1, 1)
         gamma = np.arccos(cos_gamma)
         gamma = gamma[:, np.newaxis]
         gamma = np.tile(gamma, (1, int((2 * self.omega + angle_res) // angle_res)))

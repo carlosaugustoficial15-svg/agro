@@ -119,16 +119,50 @@ def rotate_about_z(vec, angle):
     c = np.cos(angle)
     s = np.sin(angle)
 
-    Rz = np.array([
-        [c, -s, 0.0],
-        [s, c, 0.0],
-        [0.0, 0.0, 1.0]
-    ])
-    vec = np.asarray(vec)
-    if vec.ndim == 1:
-        return Rz @ vec
+    vectors = np.asarray(vec, dtype=float)
+    if vectors.shape[-1] != 3:
+        raise ValueError("Vectors must have a final dimension of length 3")
+    x, y, z = np.moveaxis(vectors, -1, 0)
+    return np.stack((c * x - s * y, s * x + c * y, z), axis=-1)
+
+
+def rotate_points(points, axis, angle_deg, origin=(0.0, 0.0, 0.0)):
+    """Rotate a point or (N, 3) vertex array without a BLAS matrix multiply."""
+    values = np.asarray(points, dtype=float)
+    center = np.asarray(origin, dtype=float)
+    x, y, z = np.moveaxis(values - center, -1, 0)
+    angle = np.deg2rad(float(angle_deg))
+    c, s = np.cos(angle), np.sin(angle)
+    if axis == "x":
+        rotated = (x, c * y - s * z, s * y + c * z)
+    elif axis == "y":
+        rotated = (c * x + s * z, y, -s * x + c * z)
+    elif axis == "z":
+        rotated = (c * x - s * y, s * x + c * y, z)
     else:
-        # vec is (N,3): apply matrix to each row
-        return (Rz @ vec.T).T
+        raise ValueError(f"Unsupported rotation axis: {axis}")
+    return np.stack(rotated, axis=-1) + center
+
+
+def rotate_geometry(geometry, axis, angle_deg, origin=(0.0, 0.0, 0.0)):
+    """Rotate PyVista polygonal data by transforming vertices without VTK filters."""
+    if hasattr(geometry, "n_blocks"):
+        for block in geometry:
+            if block is not None:
+                rotate_geometry(block, axis, angle_deg, origin)
+    elif hasattr(geometry, "points") and geometry.n_points:
+        geometry.points = rotate_points(geometry.points, axis, angle_deg, origin)
+    return geometry
+
+
+def translate_geometry(geometry, offset):
+    """Translate PyVista polygonal data by offsetting vertices without VTK filters."""
+    if hasattr(geometry, "n_blocks"):
+        for block in geometry:
+            if block is not None:
+                translate_geometry(block, offset)
+    elif hasattr(geometry, "points") and geometry.n_points:
+        geometry.points = np.asarray(geometry.points, dtype=float) + np.asarray(offset, dtype=float)
+    return geometry
 
 

@@ -40,6 +40,11 @@ def run_independant_years_of_crop(config, option_2D, WD, daily_irr, lat, alt):
             
             if option_2D==1:
                 irradiation = daily_irr[year][:,day.day_of_year-1]
+            else:
+                # The integrated SIMPLE mode represents the crop zone by its
+                # mean daily irradiation; keep the result scalar and avoid
+                # calculating the full 2D map when the user chooses fast mode.
+                irradiation = float(np.nanmean(daily_irr[year][:,day.day_of_year-1]))
             
             ET0 = get_ET0(WD[year]['Avg_temp'][day],
                           WD[year]['Min_temp'][day],

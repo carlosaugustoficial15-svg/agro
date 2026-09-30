@@ -1,0 +1,68 @@
+cutType:
+    Value: graze
+    Type: string
+    Limit: ['None', 'graze', 'mow']
+    Description: Determines how biomass is removed
+cutDecisionType:
+    Value: dates
+    Type: string
+    Limit: ['None', 'dates', 'sward_height', 'frequency']
+    Description: Specifies when cutting takes place
+biomassRemovalType:
+    Value: cut_height
+    Type: string
+    Limit: ['None', 'max_BM', 'cut_height']
+    Description: Defines the extent of biomass removal
+rotationType:
+    Value: None
+    Type: string
+    Limit: ['None', 'dates', 'sward_height', 'frequency']
+    Description: Specifies when rotation occurs
+fertilizationType:
+    Value: dates
+    Type: string
+    Limit: ['None', 'dates', 'days_after_cut']
+    Description: Specifies when fertilization occurs. See respectively cut_dates or cut_to_fert_days.
+
+cut_dates:
+    Value: ['15-04', '15-05', '15-06']
+    Type: list
+    Description: Cuting dates for all simulation years. List of strings in dd-mm format.
+cut_height:
+    Value: 0.05
+    Type: float
+    Limit: [0.01, 2]
+    Description: remaining sward height after cut.
+
+cut_to_fert_days:
+    Value: 3
+    Type: integer
+    Unit: day
+    Description: time between cut and fertilization
+    Limit: [0, 365]
+fert_dates:
+    Value: ['15-04', '15-05', '15-06']
+    Type: list
+    Description: Fertilization dates for all simulation years. List of strings in dd-mm format.
+fert_min:
+    Value: 60
+    Type: float
+    Unit: KgN/ha
+    Description: Amount of mineral fertilizer applied
+    Limit: [0, 999]
+fert_org:
+    Value: 0
+    Type: float
+    Unit: KgN/ha
+    Description: Amount of organic fertilizer applied
+    Limit: [0, 999]
+percentageofNmin:
+    Value: 0.02
+    Type: float
+    Limit: [0,1]
+    Definition: Proportion of Nmin in organic fertilizer
+NH3volatfactor:
+    Value: 0.045
+    Type: float
+    Limit: [0,1]
+    Definition: Factor for NH3 volatilization depending on fertiliser quality (0.45 for bad, 0.27 if medium, 0.045 if good)

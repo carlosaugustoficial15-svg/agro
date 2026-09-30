@@ -1,0 +1,18 @@
+not_runoff:
+    Value: 0.
+    Type: float
+    Unit: millimeter [mm]
+    Limit: [0,1000]
+    Definition: Water remaining above saturation from previous day
+Nmin:
+    Value: 50.
+    Type: float
+    Limit: [0,20000]
+    Unit: kilograms per hectare
+    Definition: Mineral nitrogen in soil
+Norg:
+    Value: 50.
+    Type: float
+    Limit: [0,20000]
+    Unit: kilograms per hectare
+    Definition: Organic nitrogen in soil

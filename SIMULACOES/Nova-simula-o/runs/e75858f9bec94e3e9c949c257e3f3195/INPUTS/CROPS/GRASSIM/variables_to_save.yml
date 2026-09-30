@@ -1,0 +1,32 @@
+soil_variables:
+- Norg
+- Nmin
+- immobilization
+- mineralization
+- Vp
+- N_leached
+
+crop_variables:
+- BM
+- BMGV
+- BMGR
+- ST
+- OMDGV
+- OMDGR
+- N_uptake
+- QNGV
+- FNH
+- GRO
+- GROGV
+- SENGV
+- ageGV
+- ageGR
+- ageDV
+- ageDR
+- fageGV
+- apex_grazed
+
+management_variables:
+- exported_BM
+- exported_N
+- exported_digestibleOM

@@ -1,0 +1,78 @@
+NumberOfPanelsX:
+   Value: 2
+   Type: integer
+   Limit: [1, 1000]
+   Unit: dimensionless [-]
+   Definition: Number of panels on the x axis in one block of panels (x axis being the second potential axis of rotation of the block of panels)
+NumberOfPanelsY:
+   Value: 8
+   Type: integer
+   Limit: [1, 1000]
+   Unit: dimensionless [-]
+   Definition: Number of panels on the y axis in one block of panels
+RepetitionDistanceOfPanelsX:
+   Value: 1.5
+   Type: float
+   Limit: [0, 100]
+   Unit: meters [m]
+   Definition: Length between the repetition of 2 panels on the x axis of one block of panels
+RepetitionDistanceOfPanelsY:
+   Value: 3.4
+   Type: float
+   Limit: [0, 100]
+   Unit: meters [m]
+   Definition: Length between the repetition of 2 panels on the y axis of one block of panels
+RotationAxisNumber:
+   Value: 0
+   Type: integer
+   Limit: [0, 1]
+   Unit: dimensionless [-]
+   Definition: Number of rotation axis that drive the block of panels
+TiltY:
+   Value: -50
+   Type: float
+   Limit: [-80, 80]
+   Unit: degree [°]
+   Definition: Tilt of the photovoltaic block around the y axis which would be the potential main axis of rotation
+Height:
+   Value: 2.3
+   Type: float
+   Limit: [0.1, 20]
+   Unit: meters [m]
+   Definition: Height from the ground to the main axis of the block of panels
+NumberOfPVBlocksX:
+   Value: 5
+   Type: integer
+   Limit: [0, 1000]
+   Unit: dimensionless [-]
+   Definition: Number of blocks on the x axis of the photovoltaic central (x axis being the potential second rotation axis of the block of panels)
+NumberOfPVBlocksY:
+   Value: 3
+   Type: integer
+   Limit: [0, 1000]
+   Unit: dimensionless [-]
+   Definition: Number of blocks on the y axis of the photovoltaic central (y axis being the potential main rotation axis of the block of panels)
+RepetitionDistanceOfPVBlocksX:
+   Value: 15
+   Type: float
+   Limit: [NumberOfPanelsX*RepetitionDistanceOfPanelsX,1000]
+   Unit: meters [m]
+   Definition: Length between the repetition of 2 blocks of panels on the x axis of the photovoltaic central
+RepetitionDistanceOfPVBlocksY:
+   Value: 30
+   Type: float
+   Limit: [NumberOfPanelsY*RepetitionDistanceOfPanelsY, 1000]
+   Unit: meters [m]
+   Definition: Length between the repetition of 2 blocks of panels on the y axis of the photovoltaic central
+TwoFacetsRelativePosition:
+   Value: 0.
+   Type: float
+   Limit: [-5, 5]
+   Units: meters
+   Definition: If you have to construct a PV geometry with modules having 2 facets (often 1 oriented east and the other west), it is the horizontal relative position of the panels potential rotation axis and the centre of the module with 2 facets. If there is not 2 facets, set this parameter to 0.
+CentralAzimut:
+   Value: 30
+   Type: float
+   Limit: [0,360]
+   Unit: degrees [°]
+   Definition: Rotation angle of the central around the z axis. 0 is N ; 90 is E ; 180 is S ; 270 is W

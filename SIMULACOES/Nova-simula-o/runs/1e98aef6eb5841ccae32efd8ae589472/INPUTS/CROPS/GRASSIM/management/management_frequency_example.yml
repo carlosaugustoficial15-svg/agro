@@ -1,0 +1,63 @@
+cutType:
+    Value: graze
+    Type: string
+    Limit: ['None', 'graze', 'mow']
+    Description: Determines how biomass is removed
+cutDecisionType:
+    Value: frequency
+    Type: string
+    Limit: ['None', 'dates', 'sward_height', 'frequency']
+    Description: Specifies when cutting takes place
+biomassRemovalType:
+    Value: max_BM
+    Type: string
+    Limit: ['None', 'max_BM', 'cut_height']
+    Description: Defines the extent of biomass removal
+rotationType:
+    Value: None
+    Type: string
+    Limit: ['None', 'dates', 'sward_height', 'frequency']
+    Description: Specifies when rotation occurs
+fertilizationType:
+    Value: None
+    Type: string
+    Limit: ['None', 'dates', 'days_after_cut']
+    Description: Specifies when fertilization occurs
+
+
+number_of_cutting_periods:
+    Value: 1
+    Type: integer
+    Limit: [1,100]
+    Description: Number of cutting periods
+cutting_start_1:
+    Value: '15-04'
+    Type: string
+    Description: start date of cutting period 1 
+cutting_end_1: 
+    Value: '15-07'
+    Type: string
+    Description: end date of cutting period 1 
+cutting_frequency_1:
+    Value: 1
+    Type: integer
+    Limit: [1,365]
+    Unit: day
+    Description: cutting frequency of period 1
+
+max_BM:
+    Value: 300
+    Type: float
+    Limit: [0,50000]
+    Unit: kg/ha/day
+    Description: Maximum daily sry biomass consumption
+min_available_height:
+    Value: 0.03
+    Type: float
+    Limit: [0,1]
+    Unit: meter
+    Description: minimum grazing height
+priority_order:
+    Value: ['GV', 'GR', 'DV', 'DR']
+    Type: list
+    Description : priority order of biomass consumption

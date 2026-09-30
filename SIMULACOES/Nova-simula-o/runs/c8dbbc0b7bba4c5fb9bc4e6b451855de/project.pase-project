@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "name": "Nova simulação",
+  "site": {
+    "name": "Campos dos Goytacazes, Rio de Janeiro, Região Sudeste, Brasil",
+    "latitude": -21.7546,
+    "longitude": -41.3242,
+    "altitude": 12,
+    "timezone": "America/Sao_Paulo",
+    "mode": "agriculture",
+    "enriched": {
+      "latitude": {
+        "value": -21.7546,
+        "source": "user/geocoder",
+        "retrievedAt": "2026-09-29T20:43:07.751847+00:00",
+        "confidence": 1
+      },
+      "longitude": {
+        "value": -41.3242,
+        "source": "user/geocoder",
+        "retrievedAt": "2026-09-29T20:43:07.751847+00:00",
+        "confidence": 1
+      },
+      "altitude": {
+        "value": 12,
+        "source": "Open-Meteo/Copernicus DEM",
+        "retrievedAt": "2026-09-29T20:43:07.751847+00:00",
+        "cache": "network",
+        "confidence": 0.85
+      },
+      "timezone": {
+        "value": "America/Sao_Paulo",
+        "source": "Open-Meteo",
+        "retrievedAt": "2026-09-29T20:43:07.751847+00:00",
+        "confidence": 0.95
+      },
+      "weather": {
+        "value": {
+          "time": "2026-09-29T17:30",
+          "interval": 900,
+          "temperature_2m": 25.5,
+          "relative_humidity_2m": 81,
+          "precipitation": 0,
+          "wind_speed_10m": 18.5
+        },
+        "units": {
+          "time": "iso8601",
+          "interval": "seconds",
+          "temperature_2m": "°C",
+          "relative_humidity_2m": "%",
+          "precipitation": "mm",
+          "wind_speed_10m": "km/h"
+        },
+        "source": "Open-Meteo",
+        "retrievedAt": "2026-09-29T20:43:07.751847+00:00",
+        "cache": "network",
+        "confidence": 0.8
+      },
+      "solarHistory": {
+        "value": "available-on-simulation",
+        "source": "PVGIS",
+        "retrievedAt": "2026-09-29T20:43:07.751847+00:00",
+        "confidence": 0.9
+      }
+    }
+  },
+  "layout": {
+    "tilt": 49,
+    "azimuth": 180,
+    "spacing": 7.25,
+    "rows": 3,
+    "panelsPerRow": 35,
+    "height": 2.9,
+    "panelCount": 105,
+    "energyIndex": 261.3,
+    "agricultureIndex": 0.917,
+    "score": 0.5979994353130308
+  },
+  "weights": {
+    "energy": 0.35,
+    "agriculture": 0.4,
+    "access": 0.2,
+    "cost": 0.1
+  },
+  "polygon": [],
+  "electricalModel": "cec",
+  "updatedAt": "2026-09-29T20:46:04.266Z",
+  "module": {
+    "id": "Jetion_Solar__China__JT235SCc_Black_",
+    "name": "Jetion Solar / China / JT235SCc Black ",
+    "Technology": "Mono-c-Si",
+    "STC": 235.312,
+    "PTC": 211.7,
+    "A_c": 1.642,
+    "Length": 1.655,
+    "Width": 0.992,
+    "Bifacial": 0
+  }
+}

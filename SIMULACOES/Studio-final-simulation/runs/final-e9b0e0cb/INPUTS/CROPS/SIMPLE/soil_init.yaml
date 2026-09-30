@@ -1,0 +1,36 @@
+WaterHoldingCapacity: 
+   Value: 0.095
+   Type: float
+   Limit: [0, 1]
+   Unit: dimensionless [-]
+   Definition: Water holding capacity of the soil
+InitialAmountOfAvailableWater:
+   Value: 95
+   Type: float
+   Limit: [0, 600]
+   Unit: [mm]
+   Definition: Initial amount of available water on the first day of the year
+DrainageCoeff:
+   Value: 0.41
+   Type: float
+   Limit: [0, 1]
+   Unit: dimensionless [-]
+   Definition: Drainage coefficient of the soil
+RootZoneDepth:
+   Value: 1000
+   Type: float
+   Limit: [0, 4000]
+   Unit: [mm]
+   Definition: Depth to obstacles to roots
+RunoffCurveNumber:
+   Value: 72
+   Type: float
+   Limit: [0, 600]
+   Unit: dimensionless [-]
+   Definition: Runoff curve number of the soil
+Albedo:
+   Value: 0.2
+   Type: float
+   Limit: [0, 1]
+   Unit: dimensionless [-]
+   Definition: Light reflexion coefficient of the soil

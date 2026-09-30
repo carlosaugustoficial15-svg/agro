@@ -1,0 +1,34 @@
+name:
+   Value: "3D 20 LPI UV-LF"
+   Type: string
+   Definition: product name
+half_aperture_angle:
+   Value: 37.0
+   Type: float
+   Limit: [0, 90]
+   Unit: degrees [°]
+   Definition: aperture angle as defined by manufacturer/tests
+DiffuserDimensionZ:
+   Value: 0.003
+   Type: float
+   Limit: [0, 100]
+   Unit: meters [m]
+   Definition: thickness as defined by manufacturer
+DiffuserDimensionX:
+   Value: 1.2
+   Type: float
+   Limit: [0, 100]
+   Unit: meters [m]
+   Definition: size as defined by manufacturer
+DiffuserDimensionY:
+   Value: 2.384
+   Type: float
+   Limit: [0, 100]
+   Unit: meters [m]
+   Definition: size as defined by manufacturer
+Resolution:
+   Value: 0.1
+   Type: float
+   Limit: [0, 10]
+   Definition: Relative angular resolution of the discretization of the analytical equation.\
+     Relative to the minimum root square of sky patch solid angle.

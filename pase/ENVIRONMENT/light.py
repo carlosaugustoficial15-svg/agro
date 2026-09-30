@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import pyvista as pyV
 import pvlib.solarposition as pvlibSP
+import sys
 from pvlib.atmosphere import get_relative_airmass
 from pvlib.irradiance import get_extra_radiation
 import matplotlib.pyplot as plt
@@ -26,6 +27,38 @@ from pase.user_support_tools import PASE_Logger
 from pase.ENVIRONMENT.shading import Horizon
 
 logger = logging.getLogger(__name__)
+
+
+def trace_rays(geometry, origins, directions, first_point=False, retry=False):
+    """Trace rays with Embree when enabled, or a cached VTK locator for Studio."""
+    origins = np.asarray(origins, dtype=float)
+    directions = np.asarray(directions, dtype=float)
+    if os.environ.get("PASE_SAFE_RAYCAST") != "1" and sys.platform != "win32":
+        return geometry.multi_ray_trace(origins, directions, first_point=first_point, retry=retry)
+
+    hit_points, hit_rays, hit_cells = [], [], []
+    report_step = max(1, len(origins) // 20)
+    for ray_id, (origin, direction) in enumerate(zip(origins, directions)):
+        if os.environ.get("PASE_STUDIO") == "1" and ray_id % report_step == 0:
+            print(f"PASE Studio: traçando raios {ray_id}/{len(origins)}", flush=True)
+        direction_length = np.linalg.norm(direction)
+        if direction_length <= 1e-12:
+            continue
+        endpoint = origin + direction * (10000.0 / direction_length)
+        points, cells = geometry.ray_trace(origin, endpoint, first_point=False)
+        if not len(cells):
+            continue
+        distances = np.linalg.norm(points - origin, axis=1)
+        order = np.argsort(distances)
+        if first_point:
+            order = order[:1]
+        hit_points.extend(points[order])
+        hit_cells.extend(cells[order])
+        hit_rays.extend([ray_id] * len(order))
+
+    return (np.asarray(hit_points, dtype=float).reshape((-1, 3)),
+            np.asarray(hit_rays, dtype=np.int64),
+            np.asarray(hit_cells, dtype=np.int64))
 
 def get_sun_vector(beta, gamma):
     #Vectorial based system = {0,East=X, North=Y, Zenith=Z}
@@ -665,13 +698,12 @@ class Ray_casting_scene:
         # Computation of the ray interception of the N rays
         # id_rays_stopped provided the index of the ray which has been intercepted
         try:
-            intercept_points, id_rays_stopped, id_intercept_cell = (geometry
-                                                                    .polydata_all_centrals()
-                                                                    .multi_ray_trace(
+            intercept_points, id_rays_stopped, id_intercept_cell = trace_rays(
+                geometry.polydata_all_centrals(),
                 SourcePoints,
                 TargetPoints,
                 first_point=False,
-                retry=False))
+                retry=False)
             id_rays_stopped_filtred, id_intercept_cell_filtered = self.self_intercept(SourcePoints, intercept_points,
                                                                                       id_rays_stopped,
                                                                                       id_intercept_cell, tol=0.01)
@@ -690,7 +722,8 @@ class Ray_casting_scene:
                 masks[object_type] = masks[object_type].reshape(self.n_sourcepoints, n_sky_elements)
 
         except AttributeError:
-            intercept_points, id_rays_stopped, id_intercept_cell = geometry.multi_ray_trace(
+            intercept_points, id_rays_stopped, id_intercept_cell = trace_rays(
+                geometry,
                 SourcePoints,
                 TargetPoints,
                 first_point=False,
@@ -764,16 +797,16 @@ class Ray_casting_scene:
         #Computation of the ray interception of the N rays
         #id_rays_stopped provided the index of the ray which has been intercepted
         try:
-            intercept_points, id_rays_stopped, _ = (geometry
-                                                    .polydata_all_centrals()
-                                                    .multi_ray_trace(
+            intercept_points, id_rays_stopped, _ = trace_rays(
+                geometry.polydata_all_centrals(),
                 SourcePoints,
                 TargetPoints,
                 first_point=False,
-                retry=False))
+                retry=False)
 
         except AttributeError as e:
-            intercept_points, id_rays_stopped, _ = geometry.multi_ray_trace(
+            intercept_points, id_rays_stopped, _ = trace_rays(
+                geometry,
                 SourcePoints,
                 TargetPoints,
                 first_point=False,
@@ -915,12 +948,13 @@ class Ray_casting_scene:
         #Computation of the ray interception of the N rays
         #id_rays_stopped provided the index of the ray which has been intercepted
         try:
-            intercept_points, id_rays_stopped, _ = geometry.polydata_all_centrals().multi_ray_trace(SourcePoints,
+            intercept_points, id_rays_stopped, _ = trace_rays(geometry.polydata_all_centrals(), SourcePoints,
                                                          TargetPoints,
                                                          first_point=False,
                                                          retry=False)
         except AttributeError as e:
-            intercept_points, id_rays_stopped, _ = geometry.multi_ray_trace(
+            intercept_points, id_rays_stopped, _ = trace_rays(
+                geometry,
                 SourcePoints,
                 TargetPoints,
                 first_point=False,

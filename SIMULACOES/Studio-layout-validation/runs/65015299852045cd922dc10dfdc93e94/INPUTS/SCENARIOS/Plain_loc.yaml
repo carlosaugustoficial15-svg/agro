@@ -1,0 +1,141 @@
+LocationName: 
+   Value: Lampernisse
+   Type: string
+   Definition: Name of the location
+TimeZone:
+   Value: Etc/GMT+0
+   Type: string
+   Definition: Precision on the time zone because otherwise, pvlib import sun positions in UTC0   
+Latitude:
+   Value: 51.029
+   Type: float
+   Limit: [-90, 90]
+   Unit: degrés décimaux [-]
+   Definition: Latitude of the location
+Longitude:
+   Value: 2.782
+   Type: float
+   Limit: [-180, 180]
+   Unit: degrés décimaux [-]
+   Definition: Longitude of the location
+Altitude:
+   Value: 1035
+   Type: float
+   Limit: [0, 3000]
+   Unit: meters [m]
+   Definition: Altitude of the location
+WeatherDataOption:
+   Value: 1
+   Type: integer
+   Limit: [1, 2]
+   Unit: dimensionless [-]
+   Definition: Option 1 means get the meteo data from PvGis and option 2 means get the meteo data from a file in DATABASE
+WeatherFileName:
+   Value: Chanco_Chile_WD
+   Type: string
+   Definition: Name of the hourly or more precise (10 min or 15 min) 
+      weather data csv file (pay attention to the format it should have) 
+      if WeatherDataOption is 2.
+DailyWeatherFileName:
+   Value: minimal_PRECIP_VP
+   Type: string
+   Definition: Name of the daily weather data csv file with precipitation and 
+      vapour pressure (pay attention to the format it should have) 
+      used if WeatherDataOption is 1 (PVGis used).
+SimulationStartingYear:
+   Value: 2020
+   Type: integer
+   Limit: [1900, SimulationEndingYear]
+   Unit: dimensionless [-]
+   Definition: Starting year of the simulation, PvGis has data starting in 2005.
+SimulationEndingYear:
+   Value: 2020
+   Type: integer
+   Limit: [SimulationStartingYear, 2023]
+   Unit: dimensionless [-]
+   Definition: Ending year of the simulation (included in the simulation). 
+      PVGIS databases have data until
+      2023 (SARAH3 database - Europe, Central Asia, Africa and South America (partly)),
+      2020 (SARAH2 - Europe, Asia, Africa and South America (below 20 S)),
+      2015 (NSRDB - Americas (above 20 S)),
+      2023 (ERA5 - reanalysis database for "rest of the world).
+PrecisionLevelOnSunPosition:
+   Value: 1
+   Type: integer
+   Limit: [1, 3]
+   Unit: dimensionless [-]
+   Definition: Level 1 means the same average solar position during each days of a month, level 2 means the same average solar position during each days of a week and level 3 means solar position is computed for each day
+SkyDiscretizationScheme:
+   Value: Reinhart
+   Type: string
+   Possibilities: [Reinhart, Fibonacci]
+   Definition: Choose a sky discretization scheme, default is Reinhart. The resolution is set in field MF for Reinhart, in FibonacciSamples for Fibonacci
+MF:
+   Value: 1
+   Type: integer
+   Limit: [1,32]
+   Definition: Multiplying Factor to apply in Reinhart discretization scheme. Subdivide each cell of the original Tregenza 145 scheme into MF cells
+FibonacciSamples:
+   Value: 180
+   Type: integer
+   Limit: [1,100000]
+   Definition: Samples in the Fibonacci sky subdivision scheme.
+DiffuseSkyType:
+   Value: From weather data
+   Type: string
+   Possibilities: [From weather data, Uniform]
+   Definition: Determine how to compute sky diffuse radiance distribution. 
+               "From weather data" uses a simplified implementation of Igawa (2014) 
+               to derive the sky type from weather data.
+               "Uniform" assumes uniform radiance distribution (faster but less accurate).
+Xmin_InterestZone:
+   Value: -5
+   Type: float
+   Limit: [-2000, 2000]
+   Unit: meters [m]
+   Definition: Minimal x coordinates of the zone of interest for the light and crop modelling
+Xmax_InterestZone:
+   Value: 5
+   Type: float
+   Limit: [-2000, 2000]
+   Unit: meters [m]
+   Definition: Maximal x coordinates of the zone of interest for the light and crop modelling
+dX_InterestZone:
+   Value: 0.5
+   Type: float
+   Limit: [-2000, 2000]
+   Unit: meters [m]
+   Definition: Increment in the x coordinates of the zone of interest for the light and crop modelling
+Ymin_InterestZone:
+   Value: -20
+   Type: float
+   Limit: [-2000, 2000]
+   Unit: meters [m]
+   Definition: Minimal y coordinates of the zone of interest for the light and crop modelling
+Ymax_InterestZone:
+   Value: 20
+   Type: float
+   Limit: [-2000, 2000]
+   Unit: meters [m]
+   Definition: Maximal y coordinates of the zone of interest for the light and crop modelling
+dY_InterestZone:
+   Value: 0.5
+   Type: float
+   Limit: [-2000, 2000]
+   Unit: meters [m]
+   Definition: Increment in the y coordinates of the zone of interest for the light and crop modelling
+InterestZoneOrientationMode:
+  Value: custom
+  Type: string
+  Possibilities: [default, auto, custom]
+  Definition: Orientation mode for the interest zone.
+    - default  aligned to North (0°)
+    - auto aligned with PV azimuth
+    - custom use InterestZoneCustomAngle
+InterestZoneCustomAngle:
+  Value: 60
+  Type: float
+  Limit: [0, 360]
+  Unit: degrees [°]
+  Definition: Custom orientation angle for the interest zone. Starting from the north in a clockwise direction
+    (used only if InterestZoneOrientationMode = "custom")

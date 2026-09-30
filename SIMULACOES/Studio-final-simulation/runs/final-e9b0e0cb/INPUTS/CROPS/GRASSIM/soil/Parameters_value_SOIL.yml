@@ -1,0 +1,56 @@
+sand:
+    Value: 25.108574
+    Type: float
+    Limit: [0,100]
+    Definition: proportion of sand in the soil
+clay:
+    Value: 25.965515
+    Type: float
+    Limit: [0,100]
+    Definition: proportion of clay in the soil
+coarse:
+    Value: 15
+    Type: float
+    Limit: [0,100]
+    Definition: proportion of coarse fragments in the soil
+org:
+    Value: 3.0896551609039307
+    Type: float
+    Limit: [0,100]
+    Definition: proportion of organic matter in the soil
+soil_depth:
+    Value: 1000
+    Type: float
+    Limit: [0,2000]
+    Definition: soil depth in mm
+max_soil_depth:
+    Value: 1000
+    Type: float
+    Limit: [0,2000]
+    Definition: maximum relevant soil depth in mm. It should be set at 1 meter.
+albedo:
+    Value: 0.2
+    Type: float
+    Limit: [0,1]
+    Definition: soil albedo for ET0 calculation
+Tref:
+    Value: 15.
+    Type: float
+    Unit: Degree Celsius [°C]
+    Limit: [0,1000]
+    Definition: Reference temperature for nitrogen mineralization
+K:
+    Value: 0.115
+    Type: float
+    Limit: [0,1]
+    Definition: Constant used in nitrogen mineralization equation
+NSc:
+    Value: 200.
+    Type: float
+    Limit: [0,1000]
+    Definition: Soil N concentration in 0-45cm stratum for maximal nitrogen availability
+FNAmax:
+    Value: 0.4
+    Type: float
+    Limit: [0,1]
+    Definition: Maximal fraction of available soil nitrogen

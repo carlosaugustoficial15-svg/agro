@@ -1,0 +1,9 @@
+CropModel:
+  Value: pystics
+  Type: string
+  Possibilities: stics, grassim, simple, pystics
+  Definition: Name of the crop model to use
+SimuInit:
+  Value: simu_init.yaml
+  Type: string
+  Definition: Name of the file containing the model initialization values.

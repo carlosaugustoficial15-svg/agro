@@ -1,0 +1,40 @@
+PanelDimensionX:
+   Value: 1.303
+   Type: float
+   Limit: [0.1,5]
+   Unit: meters [m]
+   Definition: Panel dimension on the x axis which would be the second potential axis of rotation
+PanelDimensionY:
+   Value: 2.384
+   Type: float
+   Limit: [0.1,5]
+   Unit: meters [m]
+   Definition: Panel dimension on the y axis which would be the main potential axis of rotation
+PanelDimensionZ:
+   Value: 0.1
+   Type: float
+   Limit: [0.1,1]
+   Unit: meters [m]
+   Definition: Panel dimension on the z axis (thickness)
+Panel_Peak_Power:
+   Value: 400
+   Type: float
+   Limit: [0.1,2000]
+   Unit: watt-peak [Wp]
+   Definition: Maximal electrical power production of the panel in Standard Test Conditions
+Bifaciality:
+   Value: False
+   Type: boolean
+   Possibilities: [False, True]
+   Definition: Boolean telling if the panels are bifacial (True) or not (False)
+Bifaciality_factor:
+   Value: 0.7
+   Type: float
+   Limit: [0.1, 1]
+   Unit: dimensionless [-]
+   Definition: Bifaciality factor, ratio between th efficiency of the rear face and the efficiency of the front face of the panel
+PanelThickness:
+   Value: True
+   Type: boolean
+   Possibilities: [False, True]
+   Definition: Boolean telling if the panels have a thickness in the simulation

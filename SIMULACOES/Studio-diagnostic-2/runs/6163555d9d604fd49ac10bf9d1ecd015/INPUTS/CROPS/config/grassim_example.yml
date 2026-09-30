@@ -1,0 +1,41 @@
+CropModel:
+  Value: grassim
+  Type: string
+  Possibilities: [stics, grassim, simple, pystics]
+  Definition: Name of the crop model to use
+CropInit:
+  Value: crop_init_example.yml
+  Type: string
+  Definition: Name of the file containing the model initialization values for the crop.
+SoilInit:
+  Value: soil_init_example.yml
+  Type: string
+  Definition: Name of the file containing the model initialization values for the soil.
+PFT_composition:
+  Value: PFT_composition.yml
+  Type: string
+  Definition: Name of the file containing the model initialization values for plant functional types (PFT).
+PFT_values:
+  Value: Parameters_values_PFT.csv
+  Type: string
+  Definition: Name of the file containing the PFT parameters.
+Kc_values:
+  Value: Kc_values.yml
+  Type: string
+  Definition: Name of the file containing the monthly crop coefficient values for actual evapotranspiration calculation
+Management:
+  Value: management_dates_example.yml
+  Type: string
+  Definition: Name of the file containing the management (cut, rotation, fertilization) configuration
+VariablesToSave:
+  Value: variables_to_save.yml
+  Type: string
+  Definition: Name of the file containing a list of the variables (crop, soil and management) to save.
+SoilHydraulicProperties:
+  Value: Soil_hydraulic_properties.csv
+  Type: string
+  Definition: Name of the file containing the soil hydraulic properties.
+SoilParameters:
+  Value: Parameters_value_SOIL.yml
+  Type: string
+  Definition: Name of the file containing the soil parameters.

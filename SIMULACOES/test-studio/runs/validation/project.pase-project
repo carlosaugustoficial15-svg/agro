@@ -1,0 +1,238 @@
+{
+  "name": "test-studio",
+  "site": {
+    "latitude": 50.5,
+    "longitude": 4.7,
+    "altitude": 165,
+    "timezone": "Europe/Brussels"
+  },
+  "siteParameters": {
+    "LocationName": "Gembloux",
+    "TimeZone": "Etc/GMT+0",
+    "Latitude": 50.565114,
+    "Longitude": 4.702089,
+    "Altitude": 165,
+    "WeatherDataOption": 1,
+    "WeatherFileName": "Chanco_Chile_WD",
+    "DailyWeatherFileName": "minimal_PRECIP_VP",
+    "SimulationStartingYear": 2020,
+    "SimulationEndingYear": 2020,
+    "PrecisionLevelOnSunPosition": 1,
+    "SkyDiscretizationScheme": "Reinhart",
+    "MF": 1,
+    "FibonacciSamples": 180,
+    "DiffuseSkyType": "From weather data",
+    "Xmin_InterestZone": -5,
+    "Xmax_InterestZone": 5,
+    "dX_InterestZone": 0.5,
+    "Ymin_InterestZone": 0,
+    "Ymax_InterestZone": 1,
+    "dY_InterestZone": 1,
+    "InterestZoneOrientationMode": "default",
+    "InterestZoneCustomAngle": 60
+  },
+  "layout": {
+    "tilt": 20,
+    "azimuth": 180,
+    "height": 2.5,
+    "spacing": 6,
+    "rows": 5,
+    "panelsPerRow": 12
+  },
+  "module": {
+    "PanelDimensionX": 2.384,
+    "PanelDimensionY": 1.303,
+    "PanelDimensionZ": 0.1,
+    "Panel_Peak_Power": 400,
+    "Bifaciality": false,
+    "Bifaciality_factor": 0.7,
+    "PanelThickness": true
+  },
+  "structure": {
+    "StructureType": "Agrivoltaic Fence",
+    "Material": "Wood",
+    "NumberOfStructureGroups": 16,
+    "RepetitionDistanceGroupYMode": "auto",
+    "RepetitionDistanceGroupY": 6.2,
+    "PoleShape": "cylinder",
+    "PoleWidth": 0.2,
+    "PoleHeight": 0.2,
+    "PoleSide": 0.1,
+    "PoleRadius": 0.1,
+    "PoleGroundPositioning": -0.5,
+    "PurlinShape": "cylinder",
+    "PurlinWidth": 0.2,
+    "PurlinHeight": 0.2,
+    "PurlinSide": 0.1,
+    "PurlinRadius": 0.05
+  },
+  "agriculture": {
+    "simpleConfig": {
+      "CropModel": "simple",
+      "CropInit": "crop_init.yaml",
+      "SoilInit": "soil_init.yaml",
+      "CropParameters": "crops_parameters.csv"
+    },
+    "simpleCrop": {
+      "CropID": 1,
+      "StartDayCropModel": 90,
+      "EndDayCropModel": 300,
+      "InitialBiomass": 0,
+      "InitialCumTemp": 0,
+      "InitialLAI": 0,
+      "PlantedAreaRate": 0.9
+    },
+    "simpleSoil": {
+      "WaterHoldingCapacity": 0.095,
+      "InitialAmountOfAvailableWater": 95,
+      "DrainageCoeff": 0.41,
+      "RootZoneDepth": 1000,
+      "RunoffCurveNumber": 72,
+      "Albedo": 0.2
+    },
+    "grassimConfig": {
+      "CropModel": "grassim",
+      "CropInit": "crop_init_example.yml",
+      "SoilInit": "soil_init_example.yml",
+      "PFT_composition": "PFT_composition.yml",
+      "PFT_values": "Parameters_values_PFT.csv",
+      "Kc_values": "Kc_values.yml",
+      "Management": "management_dates_example.yml",
+      "VariablesToSave": "variables_to_save.yml",
+      "SoilHydraulicProperties": "Soil_hydraulic_properties.csv",
+      "SoilParameters": "Parameters_value_SOIL.yml"
+    },
+    "grassimCrop": {
+      "BM_init_type": "InitialBM",
+      "InitialHeight": 0.05,
+      "BMGV": 1000.0,
+      "BMDV": 250.0,
+      "BMGR": 0.0,
+      "BMDR": 0.0,
+      "ageGV": 0,
+      "ageDV": 0,
+      "ageGR": 0,
+      "ageDR": 0,
+      "apex_grazed": 0,
+      "Tmin": 0,
+      "Tmax": 18,
+      "Tstop": 30
+    },
+    "grassimSoil": {
+      "not_runoff": 0.0,
+      "Nmin": 50.0,
+      "Norg": 50.0
+    },
+    "grassimManagement": {
+      "cutType": "graze",
+      "cutDecisionType": "dates",
+      "biomassRemovalType": "cut_height",
+      "rotationType": "None",
+      "fertilizationType": "dates",
+      "cut_dates": [
+        "15-04",
+        "15-05",
+        "15-06"
+      ],
+      "cut_height": 0.05,
+      "cut_to_fert_days": 3,
+      "fert_dates": [
+        "15-04",
+        "15-05",
+        "15-06"
+      ],
+      "fert_min": 60,
+      "fert_org": 0,
+      "percentageofNmin": 0.02,
+      "NH3volatfactor": 0.045
+    },
+    "grassimManagementFrequency": {
+      "cutType": "graze",
+      "cutDecisionType": "frequency",
+      "biomassRemovalType": "max_BM",
+      "rotationType": "None",
+      "fertilizationType": "None",
+      "number_of_cutting_periods": 1,
+      "cutting_start_1": "15-04",
+      "cutting_end_1": "15-07",
+      "cutting_frequency_1": 1,
+      "max_BM": 300,
+      "min_available_height": 0.03,
+      "priority_order": [
+        "GV",
+        "GR",
+        "DV",
+        "DR"
+      ]
+    },
+    "grassimSoilParameters": {
+      "sand": 25.108574,
+      "clay": 25.965515,
+      "coarse": 15,
+      "org": 3.0896551609039307,
+      "soil_depth": 1000,
+      "max_soil_depth": 1000,
+      "albedo": 0.2,
+      "Tref": 15.0,
+      "K": 0.115,
+      "NSc": 200.0,
+      "FNAmax": 0.4
+    },
+    "grassimPftComposition": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    },
+    "grassimKcValues": {
+      "January": 0.11,
+      "February": 0.15,
+      "March": 0.24,
+      "April": 0.4,
+      "May": 0.49,
+      "June": 0.6,
+      "July": 0.6,
+      "August": 0.47,
+      "September": 0.37,
+      "October": 0.36,
+      "November": 0.23,
+      "December": 0.15
+    },
+    "sticsConfig": {
+      "CropModel": "stics",
+      "SimuInit": "simu_init.yaml"
+    },
+    "stics": {
+      "PlantFile": "wheat_plt",
+      "BeginDate": 240,
+      "EndDate": 700,
+      "InitFile": "ble_ini",
+      "TechnicFile": "Ble_tec",
+      "SoilName": "solble",
+      "StationFile": "climblej_sta",
+      "AnnualCropOption": 0,
+      "PlantsNumber": 1,
+      "PlantFile2ndCrop": "N/A",
+      "TechnicFile2ndCrop": "N/A"
+    },
+    "pysticsConfig": {
+      "CropModel": "pystics",
+      "SimuInit": "simu_init.yaml"
+    },
+    "pystics": {
+      "PlantFile": "wheat_plt",
+      "Variety": "Talent",
+      "BeginDate": 240,
+      "EndDate": 700,
+      "InitFile": "ble_ini",
+      "TechnicFile": "Ble_tec",
+      "SoilName": "solble",
+      "StationFile": "climblej_sta",
+      "AnnualCropOption": 0,
+      "PlantsNumber": 1,
+      "PlantFile2ndCrop": "N/A",
+      "TechnicFile2ndCrop": "N/A"
+    },
+    "model": "simple"
+  }
+}

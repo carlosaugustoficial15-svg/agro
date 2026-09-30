@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Iterable, Union, Dict, List, Any, Tuple, Optional, Sequence
+from typing import Iterable, Union, Dict, List, Any, Tuple, Optional
 import numpy as np
 import pandas as pd
 import pyvista as pyv
@@ -17,7 +17,8 @@ from pase.DATA_MANAGEMENT.visualization_in_3D import compute_ground_extent
 from pase.PHOTOVOLTAICS.structure import build_structure, compute_flush_panel_offset
 from pase.pase_math import (compute_panel_grid_positions,
                             compute_block_centers,
-                            rotate_about_z)
+                            rotate_about_z, rotate_points, rotate_geometry,
+                            translate_geometry)
 
 pyv.global_theme.allow_empty_mesh = True
 
@@ -1019,25 +1020,18 @@ class PVConfiguration3D(MultiBlockPASE):
             cx, cy, cz       = map(float, block_centers[idx])
 
             if hinge_style.lower() == "center":
-                panel = (
-                    base_panel.copy()
-                    .translate([offx, offy, offz + panel_offset])
-                    .rotate_y(tilt_deg, point=(cx, cy, cz))
-                    .rotate_z(-azimuth_deg, point=(0.0, 0.0, 0.0))
-                )
+                panel = base_panel.copy()
+                points = np.asarray(base_panel.points, dtype=float) + np.array([offx, offy, offz + panel_offset])
+                points = rotate_points(points, "y", tilt_deg, (cx, cy, cz))
+                panel.points = rotate_points(points, "z", -azimuth_deg, (0.0, 0.0, 0.0))
             elif hinge_style.lower() == "top":
-                panel = (
-                    base_panel.copy()
-                    .translate([offx, offy, offz + panel_offset])
-                    .rotate_y(90, point=(cx, cy, cz))
-                )
-                panel.rotate_y(
-                    90 - tilt_deg,
-                    point=(panel.center[0], panel.center[1],
-                           panel.center[2] + panel_height / 2),
-                    inplace=True,
-                )
-                panel.rotate_z(-azimuth_deg, point=(0.0, 0.0, 0.0), inplace=True)
+                panel = base_panel.copy()
+                points = np.asarray(base_panel.points, dtype=float) + np.array([offx, offy, offz + panel_offset])
+                points = rotate_points(points, "y", 90, (cx, cy, cz))
+                center = (points.min(axis=0) + points.max(axis=0)) / 2
+                hinge_point = center + np.array([0.0, 0.0, panel_height / 2])
+                points = rotate_points(points, "y", 90 - tilt_deg, hinge_point)
+                panel.points = rotate_points(points, "z", -azimuth_deg, (0.0, 0.0, 0.0))
             else:
                 raise ValueError(f"Unknown Hinge style '{hinge_style}'. Expected 'center' or 'top'.")
 
@@ -1178,12 +1172,10 @@ class PVConfiguration3D(MultiBlockPASE):
             offx, offy, offz = map(float, positions[idx])
             cx, cy, cz = map(float, block_centers[idx])
 
-            diffuser = (
-                base_panel.copy()
-                .translate([offx, offy, offz])
-                .rotate_y(tilt_deg, point=(cx, cy, cz))
-                .rotate_z(-azimuth_deg, point=(0.0, 0.0, 0.0))
-            )
+            diffuser = base_panel.copy()
+            points = np.asarray(base_panel.points, dtype=float) + np.array([offx, offy, offz])
+            points = rotate_points(points, "y", tilt_deg, (cx, cy, cz))
+            diffuser.points = rotate_points(points, "z", -azimuth_deg, (0.0, 0.0, 0.0))
 
             oid = self.object_id
             name = f"Diffuser_{oid}"
@@ -1233,12 +1225,9 @@ class PVConfiguration3D(MultiBlockPASE):
         for i in range(num_blocks_x):
             for j in range(num_blocks_y):
                 # copy and translate the base structure
-                struct = (base_struct.copy()
-                          .translate([block_centers[block_counter, 0],
-                                      block_centers[block_counter, 1],
-                                      0])
-                          .rotate_z(-config['CentralAzimut'], point=(0.0, 0.0, 0.0))
-                          )
+                struct = base_struct.copy()
+                translate_geometry(struct, [block_centers[block_counter, 0], block_centers[block_counter, 1], 0])
+                rotate_geometry(struct, "z", -config['CentralAzimut'])
                 info_dict = {'Type': 'Structure block',
                              'Central': self.central_id,
                              'Block_X': i,
@@ -1453,7 +1442,9 @@ class PV_Configuration_3D(PVConfiguration3D):
                 continue
             c = centers[panel.field_data["ObjectID"][0]]
 
-            panel.rotate_z(azimuth_deg, point=(0.0, 0.0, 0.0),inplace=True).rotate_y(tilt_deg, point=c, inplace=True).rotate_z(-azimuth_deg, point=(0.0, 0.0, 0.0),inplace=True)
+            rotate_geometry(panel, "z", azimuth_deg)
+            rotate_geometry(panel, "y", tilt_deg, c)
+            rotate_geometry(panel, "z", -azimuth_deg)
 
         return temp if return_multiblock else merge_polydata(temp)
 

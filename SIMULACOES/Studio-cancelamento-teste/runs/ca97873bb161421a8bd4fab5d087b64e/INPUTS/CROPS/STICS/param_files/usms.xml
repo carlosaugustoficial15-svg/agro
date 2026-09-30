@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<usms>
+  <usm nom="Siguesol_2009_position0">
+    <datedebut>240</datedebut>
+    <datefin>700</datefin>
+    <finit>ble_ini.xml</finit>
+    <nomsol>solble</nomsol>
+    <fstation>climblej_sta.xml</fstation>
+    <fclim1>Siguesol_2008_position0.2008</fclim1>
+    <fclim2>Siguesol_2009_position0.2009</fclim2>
+    <culturean>0</culturean>
+    <nbplantes>1</nbplantes>
+    <codesimul>0</codesimul>
+    <plante dominance="1">
+      <fplt>wheat_plt.xml</fplt>
+      <ftec>Ble_tec.xml</ftec>
+      <flai>null</flai>
+    </plante>
+    <plante dominance="2">
+      <fplt>null</fplt>
+      <ftec>null</ftec>
+      <flai>null</flai>
+    </plante>
+  </usm>
+</usms>

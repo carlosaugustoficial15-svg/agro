@@ -1,0 +1,108 @@
+BM_init_type:
+  Value: InitialBM
+  Type: string
+  Limit:
+  - InitialHeight
+  - InitialBM
+  Unit: none
+  Definition: Type of data used to initialize crop biomass
+InitialHeight:
+  Value: 0.05
+  Type: float
+  Limit:
+  - 0
+  - 1
+  Unit: centimeter [cm]
+  Definition: Initial height of grass
+BMGV:
+  Value: 1000
+  Type: float
+  Limit:
+  - 0
+  - 10000
+  Unit: kg/ha
+  Definition: Initial BMGV
+BMDV:
+  Value: 250
+  Type: float
+  Limit:
+  - 0
+  - 10000
+  Unit: kg/ha
+  Definition: Initial BMGV
+BMGR:
+  Value: 0
+  Type: float
+  Limit:
+  - 0
+  - 10000
+  Unit: kg/ha
+  Definition: Initial BMGR
+BMDR:
+  Value: 0
+  Type: float
+  Limit:
+  - 0
+  - 10000
+  Unit: kg/ha
+  Definition: Initial BMDR
+ageGV:
+  Value: 0
+  Type: float
+  Limit:
+  - 0
+  - 10000
+  Unit: degrees-day[°C d]
+  Definition: Age of green vegetative parts
+ageDV:
+  Value: 0
+  Type: float
+  Limit:
+  - 0
+  - 10000
+  Unit: degrees-day[°C d]
+  Definition: Age of dead vegetative parts
+ageGR:
+  Value: 0
+  Type: float
+  Limit:
+  - 0
+  - 10000
+  Unit: degrees-day[°C]
+  Definition: Age of green reproductive parts
+ageDR:
+  Value: 0
+  Type: float
+  Limit:
+  - 0
+  - 10000
+  Unit: degrees-day[°C]
+  Definition: Age of dead reproductive parts
+apex_grazed:
+  Value: 0
+  Type: integer
+  Limit:
+  - 0
+  - 1
+  Definition: 1 if apex is grazed on the initial day, 0 if not, once set to 1, remains 1
+Tmin:
+  Value: 0
+  Type: float
+  Limit:
+  - 0
+  - 100
+  Defintiion: Minimum ST temp
+Tmax:
+  Value: 18
+  Type: float
+  Limit:
+  - 0
+  - 100
+  Definition: Ceiling ST temp
+Tstop:
+  Value: 30
+  Type: float
+  Limit:
+  - 0
+  - 100
+  Definition: Maximum ST temp (if method=STICS)

@@ -1,0 +1,52 @@
+PlantFile: 
+   Value: wheat_plt
+   Type: string
+   Definition: Name of the plt.xml file of STICS with crop and variety parameters
+Variety: 
+   Value: Talent
+   Type: string
+   Definition: Name of the variety sown that is available in the plt.xml JavaStics file
+BeginDate:
+   Value: 240
+   Type: integer
+   Limit: [1, 365]
+   Definition: Julian day at which the simulation starts (hydric balance starts also on this day ???), it is not the sowing date which is define in the technic xml file
+EndDate:
+   Value: 700
+   Type: integer
+   Limit: [2, 730]
+   Definition: Julian day at which the simulation ends (hydric balance ends also on this day ???), it is not the harvesting date which is define in the technic xml file
+InitFile:
+   Value: ble_ini
+   Type: string
+   Definition: Name of the xml file of STICS with initialization parameters
+TechnicFile:
+   Value: Ble_tec
+   Type: string
+   Definition: Name of the xml file of STICS with technical parameters of the itinerary
+SoilName:
+   Value: solble
+   Type: string
+   Definition: Name of the soil in the sols.xml file of STICS with soils parameters
+StationFile:
+   Value: climblej_sta
+   Type: string
+   Definition: Name of the xml file of STICS with weather station parameters
+AnnualCropOption:
+   Value: 0
+   Type: integer
+   Limit: [0, 1]
+   Definition: Option to determine if the crop is annual (1) or bisannual (0) and therefore if each simulation requires one or two year of weather data
+PlantsNumber:
+   Value: 1
+   Type: integer
+   Limit: [1, 2]
+   Definition: Option to determine if the simulation is for a sole crop (1) or intercropping (2)
+PlantFile2ndCrop:
+   Value: N/A
+   Type: string
+   Definition: Name of the xml file of STICS with with crop and variety parameters for the 2nd crop (if not intercropping, write "N/A")
+TechnicFile2ndCrop:
+   Value: N/A
+   Type: string
+   Definition: Name of the xml file of STICS with with technical parameters of the itinerary for the 2nd crop (if not intercropping, write "N/A")

@@ -1,0 +1,39 @@
+{
+  "name": "Studio-final-simulation",
+  "site": {
+    "name": "Gembloux",
+    "latitude": 50.565114,
+    "longitude": 4.702089,
+    "altitude": 165,
+    "timezone": "Europe/Brussels"
+  },
+  "layout": {
+    "tilt": 20,
+    "azimuth": 180,
+    "spacing": 6,
+    "rows": 5,
+    "panelsPerRow": 12,
+    "height": 2.5
+  },
+  "module": {
+    "STC": 400,
+    "Length": 2.28,
+    "Width": 1.13,
+    "PanelDimensionZ": 0.035,
+    "Bifacial": 0.7,
+    "Bifaciality_factor": 0.7,
+    "PanelThickness": 0.035
+  },
+  "weights": {
+    "energy": 0.35,
+    "agriculture": 0.35,
+    "access": 0.2,
+    "cost": 0.1
+  },
+  "polygon": [],
+  "electricalModel": "simple",
+  "agriculture": {
+    "model": "simple",
+    "option2D": 0
+  }
+}

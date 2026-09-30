@@ -1,0 +1,48 @@
+January: 
+    Value: 0.11
+    Type: float
+    Limit: [0,1]
+February: 
+    Value: 0.15
+    Type: float
+    Limit: [0,1]
+March: 
+    Value: 0.24
+    Type: float
+    Limit: [0,1]
+April: 
+    Value: 0.4
+    Type: float
+    Limit: [0,1]
+May: 
+    Value: 0.49
+    Type: float
+    Limit: [0,1]
+June: 
+    Value: 0.6
+    Type: float
+    Limit: [0,1]
+July: 
+    Value: 0.6
+    Type: float
+    Limit: [0,1]
+August: 
+    Value: 0.47
+    Type: float
+    Limit: [0,1]
+September: 
+    Value: 0.37
+    Type: float
+    Limit: [0,1]
+October: 
+    Value: 0.36
+    Type: float
+    Limit: [0,1]
+November: 
+    Value: 0.23
+    Type: float
+    Limit: [0,1]
+December: 
+    Value: 0.15
+    Type: float
+    Limit: [0,1]

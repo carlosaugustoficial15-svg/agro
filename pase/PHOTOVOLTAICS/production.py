@@ -8,14 +8,19 @@
 import logging
 import numpy as np
 import pandas as pd
-from scipy.spatial.transform import Rotation as R
 import os
+import pvlib
 
 logger = logging.getLogger(__name__)
 
+
+def _studio_progress(message):
+    if os.environ.get("PASE_STUDIO") == "1":
+        print(f"PASE Studio: {message}", flush=True)
+
 class PV_Production:
     
-    def __init__(self, inputs):
+    def __init__(self, inputs, electrical_model="simple", module_parameters=None):
         
         self.bifaciality = inputs['Bifaciality']
         self.bifaciality_factor = inputs['Bifaciality_factor']
@@ -25,6 +30,8 @@ class PV_Production:
         self.panel_efficiency = panel_peak_power/(self.panel_area*1000)
         self.n_panels = (inputs['NumberOfPanelsX']*inputs['NumberOfPanelsY']*
                          inputs['NumberOfPVBlocksX']*inputs['NumberOfPVBlocksY'])
+        self.electrical_model = electrical_model
+        self.module_parameters = module_parameters or {}
         
         
         self.n_rot_axis = inputs['RotationAxisNumber']
@@ -66,6 +73,7 @@ class PV_Production:
                                                                  albedo_default_value)
 
         for year in light.keys():
+            _studio_progress(f"produção elétrica {year}: posição solar")
             
             if int(year)%4 == 0:
                 sun_vect = SP.sun_vect_leapY
@@ -79,8 +87,11 @@ class PV_Production:
                 albedo = albedo_nyears[year].Albedo.values
 
             tiltY, sv_CC = self.get_tiltY_along_time(sun_vect)
+            _studio_progress(f"produção elétrica {year}: sombreamento geométrico")
             SF_front = self.get_shading_factor_front(sv_CC, tiltY)
+            _studio_progress(f"produção elétrica {year}: sombreamento frontal")
             SF_rear =self.get_shading_factor_rear(sv_CC, tiltY)
+            _studio_progress(f"produção elétrica {year}: sombreamento traseiro")
 
             # Improved ground-transmitted GHI based on ground coverage ratio
             ground_coverage_ratio = self.get_ground_coverage_ratio(tiltY)
@@ -89,15 +100,18 @@ class PV_Production:
             GTI_front, GTI_rear = self.get_GTI(sun_vect, app_zenith, 
                                                light[year], GHI_reaching_ground,
                                                albedo, SF_front, SF_rear, tiltY)
+            _studio_progress(f"produção elétrica {year}: irradiância nos módulos")
             
             ws = WD[year]['WS10m'].to_numpy()
             amb_temp = WD[year]['T2m'].to_numpy()
             
             panels_temp = self.get_panels_temperature(ws, amb_temp,
                                                       GTI_front+GTI_rear)
+            _studio_progress(f"produção elétrica {year}: temperatura dos módulos")
             
             frontP_panel, rearP_panel, P_central = self.get_power_production(
                 panels_temp, GTI_front, GTI_rear)
+            _studio_progress(f"produção elétrica {year}: concluída")
             
             df = pd.DataFrame({'GTI_f': GTI_front.tolist(),
                                'GTI_r': GTI_rear.tolist(),
@@ -115,6 +129,24 @@ class PV_Production:
         
         one = np.ones((len(panels_T)))
         
+        if self.electrical_model == "cec":
+            params = self.module_parameters
+            missing = [key for key in ("alpha_sc", "a_ref", "I_L_ref", "I_o_ref", "R_sh_ref", "R_s", "Adjust") if params.get(key) is None]
+            if missing:
+                raise ValueError("Parâmetros CEC ausentes: " + ", ".join(missing))
+            total_irradiance = GTI_front + GTI_rear * self.bifaciality_factor
+            common = {key: params[key] for key in ("alpha_sc", "a_ref", "I_L_ref", "I_o_ref", "R_sh_ref", "R_s", "Adjust")}
+            common.update({"EgRef": params.get("EgRef", 1.121), "dEgdT": params.get("dEgdT", -0.0002677)})
+            def maximum_power(irradiance):
+                irradiance = np.asarray(irradiance, dtype=float)
+                diode = pvlib.pvsystem.calcparams_cec(np.maximum(irradiance, 1e-6), panels_T, **common)
+                power = np.asarray(pvlib.pvsystem.singlediode(*diode)["p_mp"], dtype=float)
+                return np.where(irradiance > 0, power, 0.0)
+            front_power_panel = maximum_power(GTI_front)
+            total_power_panel = maximum_power(total_irradiance)
+            rear_power_panel = np.maximum(total_power_panel - front_power_panel, 0.0)
+            return front_power_panel, rear_power_panel, total_power_panel * self.n_panels * 1e-6
+
         front_power_panel = (self.panel_efficiency*GTI_front
                                   *(1+((alpha/100)*(panels_T-T_std*one)))
                                   *self.panel_area) # W
@@ -208,20 +240,24 @@ class PV_Production:
     def get_cos_angle_btw_light_and_panels_normal(self, sun_vect, 
                                                   init_panel_normal,
                                                   tiltY):    
-        
-        rot_axis_init = np.array([[0,1,0]])*np.ones((len(sun_vect),1))
-        panels_normal_init = np.array((init_panel_normal))
-        zenith = np.array([[0,0,1]])
-        panels_tilt_rad = np.zeros((len(sun_vect[:,0]),1))
-        panels_tilt_rad[:,0] = tiltY*np.pi/180
-        rotation_vector1 = panels_tilt_rad*rot_axis_init
-        rotation_vector2 = -self.azimut*zenith
-        rotation1 = R.from_rotvec(rotation_vector1)
-        rotation2 = R.from_rotvec(rotation_vector2)
-        panels_normal = rotation2.apply(rotation1.apply(panels_normal_init))
-        cos_teta = np.sum(panels_normal*sun_vect, axis=1) #panels_normal and sun_vect are normed vectors
-        
-        return cos_teta
+        vectors = np.asarray(sun_vect, dtype=float)
+        tilt = np.asarray(tiltY, dtype=float)
+        if tilt.ndim == 0:
+            tilt = np.full(len(vectors), float(tilt))
+        tilt = np.deg2rad(tilt)
+        normal = np.broadcast_to(np.asarray(init_panel_normal, dtype=float), vectors.shape)
+
+        # Equivalent to rotating the normal about Y by tilt and then about Z
+        # by -azimuth. This avoids SciPy's native Rotation path, which aborts
+        # the bundled Windows runtime on leap-year vectors.
+        ct, st = np.cos(tilt), np.sin(tilt)
+        x_tilt = ct * normal[:, 0] + st * normal[:, 2]
+        y_tilt = normal[:, 1]
+        z_tilt = -st * normal[:, 0] + ct * normal[:, 2]
+        ca, sa = np.cos(self.azimut), np.sin(self.azimut)
+        x_normal = ca * x_tilt + sa * y_tilt
+        y_normal = -sa * x_tilt + ca * y_tilt
+        return x_normal * vectors[:, 0] + y_normal * vectors[:, 1] + z_tilt * vectors[:, 2]
     
     def get_cos_angle_btw_light_and_zenith(self, app_zenith):
         

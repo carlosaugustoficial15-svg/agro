@@ -3,6 +3,7 @@ import logging
 import math
 import numpy as np
 import pyvista as pyv
+from pase.pase_math import rotate_geometry, translate_geometry
 
 pyv.global_theme.allow_empty_mesh = True
 
@@ -143,21 +144,33 @@ class PVStructurePart(ABC):
             self.polydata = pyv.PolyData()
         else:
             if self.shape_type.lower() in ['circle', 'cylinder']:
-                self.polydata = pyv.Cylinder(center=(0, 0, 0),
-                                             direction=(0, 0, 1),
-                                             radius=self.radius,
-                                             height=self.length).triangulate()
+                # Build the cylinder as a triangle mesh. VTK's CylinderSource
+                # crashes with the bundled Windows runtime on some machines.
+                segments = 32
+                angles = np.linspace(0, 2 * np.pi, segments, endpoint=False)
+                radius = float(self.radius)
+                half = float(self.length) / 2
+                ring_x, ring_y = radius * np.cos(angles), radius * np.sin(angles)
+                points = np.column_stack((
+                    np.concatenate((ring_x, ring_x, [0.0, 0.0])),
+                    np.concatenate((ring_y, ring_y, [0.0, 0.0])),
+                    np.concatenate((np.full(segments, -half), np.full(segments, half), [-half, half])),
+                ))
+                bottom_center, top_center = 2 * segments, 2 * segments + 1
+                faces = []
+                for idx in range(segments):
+                    nxt = (idx + 1) % segments
+                    bottom_i, bottom_n = idx, nxt
+                    top_i, top_n = segments + idx, segments + nxt
+                    faces.extend((3, bottom_i, bottom_n, top_n, 3, bottom_i, top_n, top_i))
+                    faces.extend((3, top_center, top_i, top_n, 3, bottom_center, bottom_n, bottom_i))
+                self.polydata = pyv.PolyData(points, np.asarray(faces, dtype=np.int64))
             elif self.shape_type.lower() == 'square':
-                self.polydata = pyv.Cube(center=(0, 0, 0),
-                                         x_length=self.side,
-                                         y_length=self.side,
-                                         z_length=self.length
-                                         ).triangulate()
+                half_side, half_length = float(self.side) / 2, float(self.length) / 2
+                self.polydata = pyv.Box(bounds=(-half_side, half_side, -half_side, half_side, -half_length, half_length)).triangulate()
             elif self.shape_type.lower() == 'rectangle':
-                self.polydata = pyv.Cube(center=(0, 0, 0),
-                                         x_length=self.width,
-                                         y_length=self.height,
-                                         z_length=self.length).triangulate()
+                half_width, half_height, half_length = float(self.width) / 2, float(self.height) / 2, float(self.length) / 2
+                self.polydata = pyv.Box(bounds=(-half_width, half_width, -half_height, half_height, -half_length, half_length)).triangulate()
 
 
 class Pole(PVStructurePart):
@@ -177,10 +190,7 @@ class Pole(PVStructurePart):
         super().__init__(shape_type, length, **kwargs)
 
         self.orientation = 'vertical'
-        self.polydata.translate((0, 
-                                 0, 
-                                 length/2 + self.pole_ground_positioning),
-                                inplace=True)
+        translate_geometry(self.polydata, (0, 0, length/2 + self.pole_ground_positioning))
 
 
 class Purlin(PVStructurePart):
@@ -193,11 +203,11 @@ class Purlin(PVStructurePart):
 
         # Rotate to make horizontal along y
         self.orientation = 'horizontal_y'
-        self.polydata.rotate_x(90, inplace=True)
+        rotate_geometry(self.polydata, "x", 90)
 
         # Tilt the purlin
         self.tilt = panel_tilt_y  # [°]
-        self.polydata.rotate_y(self.tilt, inplace=True)
+        rotate_geometry(self.polydata, "y", self.tilt)
 
 
 class Rafter(PVStructurePart):
@@ -208,12 +218,12 @@ class Rafter(PVStructurePart):
 
         # Rotate to make horizontal along x
         self.orientation = 'horizontal_x'
-        self.polydata.rotate_z(90, inplace=True)
-        self.polydata.rotate_y(90, inplace=True)
+        rotate_geometry(self.polydata, "z", 90)
+        rotate_geometry(self.polydata, "y", 90)
 
         # Tilt the rafter
         self.tilt = panel_tilt_y  # [°]
-        self.polydata.rotate_y(self.tilt, inplace=True)
+        rotate_geometry(self.polydata, "y", self.tilt)
 
 
 class HorizontalBar(PVStructurePart):
@@ -224,7 +234,7 @@ class HorizontalBar(PVStructurePart):
 
         # Rotate to make horizontal along y
         self.orientation = 'horizontal_y'
-        self.polydata.rotate_x(90, inplace=True)
+        rotate_geometry(self.polydata, "x", 90)
 
 
 class Diagonal(PVStructurePart):
@@ -399,10 +409,7 @@ class PVStructure(ABC):
                     dim_rafter = 0
                 else:
                     dim_rafter = self.get_characteristic_dim("rafter")
-                p.polydata.translate((offx,
-                                      0,
-                                      self.base_height + dim_purlin + dim_rafter),
-                                     inplace=True)
+                translate_geometry(p.polydata, (offx, 0, self.base_height + dim_purlin + dim_rafter))
                 purlin_group.append(p.polydata)
 
             # Merge meshes into a single polydata group for apply transform to the group. 
@@ -412,11 +419,7 @@ class PVStructure(ABC):
                 combined = combined + mesh
 
             # Apply the table tilt around the new center of the group and the purlin offset.
-            combined.rotate_y(self.tilt,
-                              point=(0,
-                                     0,                                     
-                                     self.base_height),
-                              inplace=True)
+            rotate_geometry(combined, "y", self.tilt, (0, 0, self.base_height))
         # Same idea for the rafter
         elif part_group == "rafter":
             if nb_part == 1:
@@ -433,21 +436,14 @@ class PVStructure(ABC):
                            radius=self.rafter_radius, width=self.rafter_width,
                            height=self.rafter_height,
                            positioning=self.pole_ground_positioning)
-                p.polydata.translate((0, 
-                                      offy, 
-                                      self.base_height),
-                                      inplace=True)
+                translate_geometry(p.polydata, (0, offy, self.base_height))
                 rafter_group.append(p.polydata)
 
             combined = rafter_group[0].copy()
             for mesh in rafter_group[1:]:
                 combined = combined + mesh
 
-            combined.rotate_y(self.tilt,
-                              point=(0, 
-                                     0, 
-                                     self.base_height),
-                              inplace=True)
+            rotate_geometry(combined, "y", self.tilt, (0, 0, self.base_height))
         
         return combined
     
@@ -486,12 +482,12 @@ class PVStructure(ABC):
         if high_x < low_x:
             angle = -angle
 
-        diagonal.polydata.rotate_y(angle, inplace=True)
+        rotate_geometry(diagonal.polydata, "y", angle)
 
         center = ((high_x + low_x) / 2.0,
                   -self.purlin_length / 2.0,
                   (high_z + low_z) / 2.0)
-        diagonal.polydata.translate(center, inplace=True)
+        translate_geometry(diagonal.polydata, center)
 
         return diagonal.polydata
 
@@ -559,7 +555,7 @@ class AgrivoltaicFence(PVStructure):
                     side=self.pole_side,
                     radius=self.pole_radius,
                     positioning=self.pole_ground_positioning)
-        pole.polydata.translate((0, -self.purlin_length/2, 0), inplace=True)
+        translate_geometry(pole.polydata, (0, -self.purlin_length/2, 0))
 
         horizontal_bar_top = HorizontalBar(self.purlin_shape,
                                            length=self.purlin_length,
@@ -569,8 +565,7 @@ class AgrivoltaicFence(PVStructure):
                                            radius=self.purlin_radius)
 
         _fine_positioning_offset = self.get_characteristic_dim("purlin")  # [m] vertical offset to avoid clipping between horizontal bars and PV modules
-        horizontal_bar_top.polydata.translate((0, 0, self.top_bar_height),
-                                              inplace=True)
+        translate_geometry(horizontal_bar_top.polydata, (0, 0, self.top_bar_height))
 
         # 2nd horizontal bar is a copy of horizontal_bar_top,
         # translated downwards to the middle of the panel group (in the group's X axis)
@@ -580,10 +575,8 @@ class AgrivoltaicFence(PVStructure):
                                            inplace=True))
 
         # Fine positioning of both horizontal bars
-        horizontal_bar_top.polydata.translate((0, 0, _fine_positioning_offset),
-                                              inplace=True)
-        horizontal_bar_bottom.translate((0, 0, _fine_positioning_offset),
-                                                 inplace=True)
+        translate_geometry(horizontal_bar_top.polydata, (0, 0, _fine_positioning_offset))
+        translate_geometry(horizontal_bar_bottom, (0, 0, _fine_positioning_offset))
 
 
         combined = (pole.polydata
@@ -606,7 +599,7 @@ class AgrivoltaicFence(PVStructure):
 
         for offy in group_y_offsets:
             g = self.make_elementary_group()
-            g.translate((0, offy, 0), inplace=True)
+            translate_geometry(g, (0, offy, 0))
             blocks.append(g)
 
         end_pole = Pole(self.pole_shape,
@@ -617,10 +610,7 @@ class AgrivoltaicFence(PVStructure):
                         radius=self.pole_radius,
                         positioning=self.pole_ground_positioning)
 
-        end_pole.polydata.translate((0,
-                                     group_y_offsets[-1] + self.repetition_distance_group_Y / 2,
-                                     0.0),
-                                    inplace=True)
+        translate_geometry(end_pole.polydata, (0, group_y_offsets[-1] + self.repetition_distance_group_Y / 2, 0.0))
         blocks.append(end_pole.polydata)
         combined_blocks = blocks.combine()
         combined_blocks.user_dict = {'Material': self.material}
@@ -710,10 +700,7 @@ class PVTable(PVStructure):
                     side=self.pole_side,
                     radius=self.pole_radius,
                     positioning=self.pole_ground_positioning)
-        pole.polydata.translate((-self.half_span, 
-                                 -self.purlin_length/2,
-                                 0), 
-                                inplace=True)
+        translate_geometry(pole.polydata, (-self.half_span, -self.purlin_length/2, 0))
 
         pole_2 = Pole(self.pole_shape,
                       length=(self.base_height - self.height_offset - self.pole_ground_positioning),
@@ -722,20 +709,14 @@ class PVTable(PVStructure):
                       side=self.pole_side,
                       radius=self.pole_radius,
                       positioning=self.pole_ground_positioning)
-        pole_2.polydata.translate((self.half_span,
-                                   -self.purlin_length/2,
-                                   0),
-                                  inplace=True)
+        translate_geometry(pole_2.polydata, (self.half_span, -self.purlin_length/2, 0))
         
         rafter = Rafter(self.rafter_shape, length=self.rafter_length,
                         panel_tilt_y=self.tilt, radius=self.rafter_radius,
                         side=self.rafter_side, width=self.rafter_width,
                         height=self.rafter_height,
                         positioning=self.pole_ground_positioning)
-        rafter.polydata.translate((0,
-                                   -self.purlin_length/2,
-                                   self.base_height),
-                                  inplace=True)
+        translate_geometry(rafter.polydata, (0, -self.purlin_length/2, self.base_height))
         
         diagonal = self.make_diagonal()
 
@@ -760,14 +741,11 @@ class PVTable(PVStructure):
 
         for offy in group_y_offsets:
             g = self.make_elementary_group()
-            g.translate((0, offy, 0), inplace=True)
+            translate_geometry(g, (0, offy, 0))
             blocks.append(g)
 
         end_pole = self.make_start_and_end_block()
-        end_pole.translate((0,
-                            offy + self.repetition_distance_group_Y,
-                            0.0),
-                            inplace=True)
+        translate_geometry(end_pole, (0, offy + self.repetition_distance_group_Y, 0.0))
         
         blocks.append(end_pole)
 
@@ -863,7 +841,7 @@ class HSATS(PVStructure):
 
         for offy in group_y_offsets:
             group = self.make_elementary_group()
-            group.translate((0.0, offy, 0.0), inplace=True)
+            translate_geometry(group, (0.0, offy, 0.0))
             blocks.append(group)
 
         combined = blocks.combine()

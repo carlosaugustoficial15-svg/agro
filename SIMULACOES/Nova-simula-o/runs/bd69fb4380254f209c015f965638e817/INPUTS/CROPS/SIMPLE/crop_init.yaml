@@ -1,0 +1,55 @@
+CropID:
+  Value: 1
+  Type: integer
+  Limit:
+  - 1
+  - 24
+  Definition: ID of the crop in the crop_parameters file
+StartDayCropModel:
+  Value: 90
+  Type: integer
+  Limit:
+  - 1
+  - 365
+  Definition: Julian day at which the crop growth simulation starts either starting from sowing or from
+    another stage of development (hydric balance starts anyway on the first day of year)
+EndDayCropModel:
+  Value: 300
+  Type: integer
+  Limit:
+  - 2
+  - 365
+  Definition: Julian day at which the crop growth simulation ends
+InitialBiomass:
+  Value: 0
+  Type: float
+  Limit:
+  - 0
+  - 1000
+  Unit: grams per square meters [g/m²]
+  Definition: Biomass of the crop at the beginning of the simulation
+InitialCumTemp:
+  Value: 0
+  Type: float
+  Limit:
+  - 0
+  - 2000
+  Unit: celcius degrees [°C]
+  Definition: Cumulated temperature (in degree days) accumulated by the crop at the beginning of the simulation
+InitialLAI:
+  Value: 0
+  Type: float
+  Limit:
+  - 0
+  - 6
+  Unit: dimensionless [-]
+  Definition: Leaf area index of the crop at the beginning of the simulation
+PlantedAreaRate:
+  Value: 0.9
+  Type: float
+  Limit:
+  - 0
+  - 1
+  Unit: dimensionless [-]
+  Definition: Ratio between the area really cultivated in agrivoltaics condition and the area that would
+    have been cultivated in open field agriculture

@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.spatial.transform import Rotation as R
 
 def cart_to_sph(x, y, z):
     """
@@ -74,10 +73,11 @@ def rotation_coordinate(vector_to_rotate, unit_vector, angle):
     Output :
         rotated vector with the same shape as the entry
     """
-    x, y, z = unit_vector
-    rot_mat = R.from_quat([np.sin(angle / 2) * x, np.sin(angle / 2) * y, np.sin(angle / 2) * z, np.cos(angle / 2)])
-    vect_to_reshape_T = vector_to_rotate.T
-    vtr = vect_to_reshape_T.reshape(vect_to_reshape_T.shape[0] * vect_to_reshape_T.shape[1], 3)
-    vect_rot = rot_mat.apply(vtr)
-    vect_rot = vect_rot.reshape(vect_to_reshape_T.shape)
-    return vect_rot.T
+    vectors = np.asarray(vector_to_rotate)
+    axis = np.asarray(unit_vector, dtype=float)
+    axis = axis / np.linalg.norm(axis)
+    axis = axis.reshape((3,) + (1,) * (vectors.ndim - 1))
+    cosine, sine = np.cos(angle), np.sin(angle)
+    return (vectors * cosine
+            + np.cross(axis, vectors, axisa=0, axisb=0, axisc=0) * sine
+            + axis * np.sum(axis * vectors, axis=0, keepdims=True) * (1 - cosine))
